@@ -1,58 +1,93 @@
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
-engine = create_engine("postgresql://postgres:1234@localhost/mydb", echo=True)
-
-Session = sessionmaker(bind=engine)
 Base = declarative_base()
 
+class User(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    firstname = Column(String)
+    lastname = Column(String)
+    email = Column(String)
+    password = Column(String)
+    status = Column(String)
 
-class Teacher(Base):
-    __tablename__ = "teachers"
+    def __init__(self, firstname, lastname, email, password, status):
+        self.firstname = firstname
+        self.lastname = lastname
+        self.email = email
+        self.password = password
+        self.status = status
 
-    id = Column('id', Integer, primary_key=True)
-    firstname = Column('firstname', String)
-    lastname = Column('lastname', String)
-    password = Column('password', String)
-
-
-class Student(Base):
-    __tablename__ = "students"
-
-    id = Column('id', Integer, primary_key=True)
-    firstname = Column('firstname', String)
-    lastname = Column('lastname', String)
-    password = Column('password', String)
+#
+# class Student(Base):
+#     __tablename__ = "students"
+#     id = Column(Integer, primary_key=True)
+#     firstname = Column(String)
+#     lastname = Column(String)
+#     email = Column(String)
+#     password = Column(String)
+#
+#     def __init__(self, firstname, lastname, email ,password):
+#         self.firstname = firstname
+#         self.lastname = lastname
+#         self.email = email
+#         self.password = password
 
 
 class Course(Base):
     __tablename__ = "courses"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    owner_id = Column(Integer, ForeignKey(User.id))#, ForeignKey(Teacher.id))
+    students_of_course = Column(Integer)
 
-    id = Column('id', Integer, primary_key=True)
-    name = Column('name', String)
-    owner_id = Column('owner_id', Integer, ForeignKey(Student.id))
-    students_of_course = Column('students_of_course', Integer)
-    status = Column('status', Integer)
+
+    def __init__(self, name, owner_id, students_of_course):
+        self.name = name
+        self.owner_id = owner_id
+        self.students_of_course = students_of_course
+
+
+class StudOnCourse(Base):
+    __tablename__ = "stud_courses"
+    id = Column(Integer, primary_key=True)
+    student_id = Column(Integer, ForeignKey(User.id))
+    course_id = Column(Integer, ForeignKey(Course.id))#, ForeignKey(Teacher.id))
+
+    def __init__(self, student_id,  course_id):
+        self.student_id = student_id
+        self. course_id = course_id
+
 
 
 class Request(Base):
     __tablename__ = "requests"
 
-    id = Column('id', Integer, primary_key=True)
-    course_id = Column('course_id', Integer, ForeignKey(Course.id))
-    student_id = Column('student_id', Integer, ForeignKey(Student.id))
+    id = Column(Integer, primary_key=True)
+    course_id = Column(Integer, ForeignKey(Course.id))# ForeignKey(Course.id))
+    student_id = Column(Integer, ForeignKey(User.id))# ForeignKey(Student.id))
+    status = Column(String)
+
+    def __init__(self, course_id, student_id, status):
+        self.course_id = course_id
+        self.student_id = student_id
+        self.status = status
 
 
-
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column('id', Integer, primary_key=True)
-    firstname = Column('firstname', String)
-    lastname = Column('lastname', String)
-    email = Column('email', String)
-    phone = Column('phone', String)
-    status = Column('status', Integer)
-
-
+# class User(Base):
+#     __tablename__ = "users"
+#
+#     id = Column(Integer, primary_key=True)
+#     firstname = Column(String)
+#     lastname = Column(String)
+#     email = Column(String)
+#     phone = Column(String)
+#     status = Column(Integer)
+#
+#     def __init__(self, firstname, lastname, email, phone, status):
+#         self.firstname = firstname
+#         self.lastname = lastname
+#         self.email = email
+#         self.phone = phone
+#         self.status = status
